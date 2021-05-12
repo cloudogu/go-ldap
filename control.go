@@ -5,9 +5,9 @@
 package ldap
 
 import (
-	"strings"
 	"fmt"
 	"github.com/nmcclain/asn1-ber"
+	"strings"
 )
 
 const (
@@ -132,6 +132,12 @@ func DecodeControl(packet *ber.Packet) Control {
 			c.PagingSize = uint32(value.Children[0].Value.(uint64))
 			c.Cookie = value.Children[1].Data.Bytes()
 			value.Children[1].Value = c.Cookie
+			return c
+		}
+		criticality, ok := value.Value.(bool)
+		if ok {
+			value.Description = "Criticality"
+			c.Criticality = criticality
 			return c
 		}
 		c.ControlValue = value.Value.(string)
